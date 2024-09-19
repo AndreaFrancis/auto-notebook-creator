@@ -1,0 +1,81 @@
+{
+    "notebook_title": "Exploratory data analysis (EDA)",
+    "notebook_type": "eda",
+    "dataset_types": ["numeric", "text"],
+    "compatible_library": "pandas",
+    "notebook_template": [
+        {
+            "cell_type": "markdown",
+            "source": "---\n# **Exploratory Data Analysis (EDA) Notebook for {dataset_name} dataset**\n---"
+        },
+        {
+            "cell_type": "markdown",
+            "source": "## 1. Setup necessary libraries and load the dataset"
+        },
+        {
+            "cell_type": "code",
+            "source": "# Install and import necessary libraries.\n!pip install pandas matplotlib seaborn"
+        },
+        {
+            "cell_type": "code",
+            "source": "import matplotlib.pyplot as plt\nimport seaborn as sns"
+        },
+        {
+            "cell_type": "code",
+            "source": "# Load the dataset as a DataFrame\n{first_code}"
+        },
+        {
+            "cell_type": "markdown",
+            "source": "## 2. Understanding the Dataset"
+        },
+        {
+            "cell_type": "code",
+            "source": "# First rows of the dataset and info\nprint(df.head())\nprint(df.info())"
+        },
+        {
+            "cell_type": "code",
+            "source": "# Check for missing values\nprint(df.isnull().sum())"
+        },
+        {
+            "cell_type": "code",
+            "source": "# Identify data types of each column\nprint(df.dtypes)"
+        },
+        {
+            "cell_type": "code",
+            "source": "# Detect duplicated rows\nprint(df.duplicated().sum())"
+        },
+        {
+            "cell_type": "code",
+            "source": "# Generate descriptive statistics\nprint(df.describe())"
+        },
+        {
+            "type": "categoric",
+            "cell_type": "code",
+            "source": "# Unique values in categorical columns\ndf.select_dtypes(include=['object']).nunique()"
+        },
+        {
+            "cell_type": "markdown",
+            "source": "## 3. Data Visualization"
+        },
+        {
+            "type": "numeric",
+            "cell_type": "code",
+            "source": "# Correlation matrix for numerical columns\ncorr_matrix = df.corr(numeric_only=True)\nplt.figure(figsize=(10, 8))\nsns.heatmap(corr_matrix, annot=True, fmt='.2f', cmap='coolwarm', square=True)\nplt.title('Correlation Matrix')\nplt.show()"
+        },
+        {
+            "type": "numeric",
+            "cell_type": "code",
+            "source": "# Distribution plots for numerical columns\nfor column in df.select_dtypes(include=['int64', 'float64']).columns:\n   plt.figure(figsize=(8, 4))\n   sns.histplot(df[column], kde=True)\n   plt.title(f'Distribution of {column}')\n   plt.xlabel(column)\n   plt.ylabel('Frequency')\n   plt.show()"
+        },
+        {
+            "type": "categoric",
+            "cell_type": "code",
+            "source": "# Count plots for categorical columns\nfor column in df.select_dtypes(include=['object']).columns:\n   plt.figure(figsize=(8, 4))\n   sns.countplot(x=column, data=df)\n   plt.title(f'Count Plot of {column}')\n   plt.xlabel(column)\n   plt.ylabel('Count')\n   plt.show()"
+        },
+        {
+            "type": "numeric",
+            "cell_type": "code",
+            "source": "# Box plots for detecting outliers in numerical columns\nfor column in df.select_dtypes(include=['int64', 'float64']).columns:\n   plt.figure(figsize=(8, 4))\n   sns.boxplot(df[column])\n   plt.title(f'Box Plot of {column}')\n   plt.xlabel(column)\n   plt.show()"
+        }
+    ]
+}

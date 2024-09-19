@@ -1,0 +1,76 @@
+{
+    "notebook_title": "Supervised fine-tuning (SFT)",
+    "notebook_type": "sft",
+    "dataset_types": ["text"],
+    "compatible_library": "datasets",
+    "notebook_template": [
+        {
+            "cell_type": "markdown",
+            "source": "---\n# **Supervised fine-tuning Notebook for {dataset_name} dataset**\n---"
+        },
+        {
+            "cell_type": "markdown",
+            "source": "## 1. Setup necessary libraries and load the dataset"
+        },
+        {
+            "cell_type": "code",
+            "source": "# Install and import necessary libraries\n!pip install trl datasets transformers bitsandbytes"
+        },
+        {
+            "cell_type": "code",
+            "source": "from datasets import load_dataset\nfrom trl import SFTTrainer\nfrom transformers import TrainingArguments"
+        },
+        {
+            "cell_type": "code",
+            "source": "# Load the dataset\ndataset = load_dataset('{dataset_name}', name='{first_config}', split='{first_split}')\ndataset"
+        },
+        {
+            "cell_type": "code",
+            "source": "# Split the dataset: 20% for evaluation, 80% for training\ntrain_test_split = dataset.train_test_split(test_size=0.2)\n\n# Get the training and evaluation datasets\ntrain_dataset = train_test_split['train']\neval_dataset = train_test_split['test']"
+        },
+        {
+            "cell_type": "code",
+            "source": "# Specify the column name that will be used for training\ndataset_text_field = '{longest_col}'"
+        },
+        {
+            "cell_type": "markdown",
+            "source": "## 2. Configure SFT trainer"
+        },
+        {
+            "cell_type": "code",
+            "source": "model_name = 'facebook/opt-350m' # Replace with your desired model\noutput_model_name = f'{model_name}-{dataset_name}'.replace('/', '-')"
+        },
+        {
+            "cell_type": "code",
+            "source": "# Initialize training arguments, adjust parameters as needed\ntraining_args = TrainingArguments(\n      per_device_train_batch_size = 1, #Batch size per GPU for training\n      gradient_accumulation_steps = 4,\n      max_steps = 100, #Total number of training steps.(Overrides epochs)\n      learning_rate = 2e-4,\n      fp16 = True,\n      logging_steps=20,\n      output_dir = output_model_name,\n      optim = 'paged_adamw_8bit' #Optimizer to use\n  )"
+        },
+        {
+            "cell_type": "code",
+            "source": "# Initialize SFTTrainer\ntrainer = SFTTrainer(\n  model = model_name,\n  train_dataset=train_dataset,\n  eval_dataset=eval_dataset,\n  dataset_text_field=dataset_text_field,\n  max_seq_length=512,\n  args=training_args\n)"
+        },
+        {
+            "cell_type": "markdown",
+            "source": "## 3. Perform fine-tuning and capture the training process"
+        },
+        {
+            "cell_type": "code",
+            "source": "eval_result_before = trainer.evaluate()\n\n# Start training\ntrainer.train()\n\neval_result_after = trainer.evaluate()"
+        },
+        {
+            "cell_type": "code",
+            "source": "print(f'Before training: {eval_result_before}')\nprint(f'After training: {eval_result_after}')"
+        },
+        {
+            "cell_type": "markdown",
+            "source": "## 4. Push model to hub (Optional)"
+        },
+        {
+            "cell_type": "code",
+            "source": "# Authenticate to the Hugging Face Hub\nfrom huggingface_hub import notebook_login\nnotebook_login()"
+        },
+        {
+            "cell_type": "code",
+            "source": "# Push the model to Hugging Face Hub\ntrainer.push_to_hub()"
+        }
+    ]    
+}

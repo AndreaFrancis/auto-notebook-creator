@@ -1,0 +1,68 @@
+{
+    "notebook_title": "Text Embeddings",
+    "notebook_type": "embeddings",
+    "dataset_types": ["text"],
+    "compatible_library": "pandas",
+    "notebook_template": [
+        {
+            "cell_type": "markdown",
+            "source": "---\n# **Embeddings Notebook for {dataset_name} dataset**\n---"
+        },
+        {
+            "cell_type": "markdown",
+            "source": "## 1. Setup necessary libraries and load the dataset"
+        },
+        {
+            "cell_type": "code",
+            "source": "# Install and import necessary libraries.\n!pip install pandas sentence-transformers faiss-cpu "
+        },
+        {
+            "cell_type": "code",
+            "source": "from sentence_transformers import SentenceTransformer\nimport faiss"
+        },
+        {
+            "cell_type": "code",
+            "source": "# Load the dataset as a DataFrame\n{first_code}"
+        },
+        {
+            "cell_type": "code",
+            "source": "# Specify the column name that contains the text data to generate embeddings\ncolumn_to_generate_embeddings = '{longest_col}'"
+        },
+        {
+            "cell_type": "markdown",
+            "source": "## 2. Loading embedding model and creating FAISS index"
+        },
+        {
+            "cell_type": "code",
+            "source": "# Remove duplicate entries based on the specified column\ndf = df.drop_duplicates(subset=column_to_generate_embeddings)"
+        },
+        {
+            "cell_type": "code",
+            "source": "# Convert the column data to a list of text entries\ntext_list = df[column_to_generate_embeddings].tolist()"
+        },
+        {
+            "cell_type": "code",
+            "source": "# Specify the embedding model you want to use\nmodel = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')"
+        },
+        {
+            "cell_type": "code",
+            "source": "vectors = model.encode(text_list)\nvector_dimension = vectors.shape[1]\n\n# Initialize the FAISS index with the appropriate dimension (384 for this model)\nindex = faiss.IndexFlatL2(vector_dimension)\n\n# Encode the text list into embeddings and add them to the FAISS index\nindex.add(vectors)"
+        },
+        {
+            "cell_type": "markdown",
+            "source": "## 3. Perform a text search"
+        },
+        {
+            "cell_type": "code",
+            "source": "# Specify the text you want to search for in the list\ntext_to_search = text_list[0]\nprint(f\"Text to search: {text_to_search}\")"
+        },
+        {
+            "cell_type": "code",
+            "source": "# Generate the embedding for the search query\nquery_embedding = model.encode([text_to_search])"
+        },
+        {
+            "cell_type": "code",
+            "source": "# Perform the search to find the 'k' nearest neighbors (adjust 'k' as needed)\nD, I = index.search(query_embedding, k=10)\n\n# Print the similar documents\nprint(f\"Similar documents: {[text_list[i] for i in I[0]]}\")"
+        }
+    ]
+}

@@ -1,0 +1,7 @@
+gradio_huggingfacehub_search==0.0.7
+huggingface_hub
+nbformat
+httpx
+outlines
+python-dotenv
+nbconvert
